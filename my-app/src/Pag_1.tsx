@@ -38,6 +38,7 @@ const generi=[ "Azione", "Commedia", "Drammatico", "Fantascienza", "Horror", "Th
 
 import { useState } from "react";
 import Box_pag1 from "./Box_pag1";
+import { generi } from "./data/movies";
 
 type Pag1Props = {
   onProsegui: (generiScelti: string[]) => void;
