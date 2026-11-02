@@ -47,8 +47,8 @@ export default function Pag_1({ onProsegui }: Pag1Props) {
   const generi = [
     "Azione", "Commedia", "Drammatico", "Fantascienza", "Horror", "Thriller",
     "Animazione", "Romantico", "Avventura", "Documentario", "Fantasy", "Giallo", "Western",
-    "Biografico", "Storico", "Musical", "Crime", "Bellico", "Noir", "Post-apocalittico",
-    "Spionaggio", "Erotico", "Famiglia", "Grottesco", "Catastrofico", "Mockumentary"
+    "Biografico", "Storico", "Musical", "Crime", "Noir", "Post-apocalittico",
+    "Spionaggio", "Famiglia", "Catastrofico", "Mockumentary"
   ];
 
   const [selezionati, setSelezionati] = useState<string[]>([]);
