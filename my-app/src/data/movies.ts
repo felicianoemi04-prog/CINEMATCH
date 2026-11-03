@@ -36,7 +36,24 @@ export const LISTA_FILM: Film[] = [
     0, 0, 0, 1, 0, 0,
     0, 0, 0, 0]
 
-    }
+    },
+
+  {
+    id: 2,
+    nome: "La montaña sagrada",
+    regista: "Alejandro Jodorowsky",
+    tipologia: "film",
+    url: "https://www.primevideo.com/dp/amzn1.dv.gti.16b12dd2-31a6-d751-444c-2a7ae4efbf6c?ref_=atv_cf_strg_wb",
+    piattaforma: "Prime Video",
+    anno: 1973,
+    generi: [0.5, 1, 0.7, 0, 0, 1,
+    0, 0, 0.2, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0], //fix values per genre
+    lingua: "Spagnolo", 
+    //{/* ##in prime video it is in italiano e cè un altro posto dove guardare gratis */}
+  }
+
 ];
 
 
