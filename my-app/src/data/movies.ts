@@ -8,6 +8,7 @@ type Film = {
   url: string;
   anno: number;
   lingua: string;
+  trailer?: string;
 };
 
 export const generi: string[] = [
@@ -183,6 +184,21 @@ export const LISTA_FILM: Film[] = [
     //{fix piattaforma, url
   },
 
+  {
+    id: 11,
+    nome: "The Daytrippers", 
+    regista: "Greg Mottola",
+    tipologia: "film",
+    url: "https://www.primevideo.com/dp/amzn1.dv.gti.16b12dd2-31a6-d751-444c-2a7ae4efbf6c?ref_=atv_cf_strg_wb",
+    piattaforma: "Prime Video",
+    anno: 1996,
+    generi: [0.5, 1, 0.7, 0, 0, 1,
+    0, 0, 0.2, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0], //fix values per genre → comedy, drama
+    lingua: "Inglese",
+    //{fix piattaforma, url
+  },
 ];
 
 
