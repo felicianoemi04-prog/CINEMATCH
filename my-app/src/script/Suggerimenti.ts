@@ -12,7 +12,7 @@ export type Film = {
 
 
 }
-const Generiammessi=['Avventura', 'Azione', 'Romance', 'Horror', 'Crime', 'Famiglia', 'Fantascienza', 'Musica', 'Storia', 'Fantasy', 'Mistero', 'Thriller', 'Commedia', 'Guerra', 'Dramma', 'Western', 'Animazione']
+export const Generiammessi=['Avventura', 'Azione', 'Romance', 'Horror', 'Crime', 'Famiglia', 'Fantascienza', 'Musica', 'Storia', 'Fantasy', 'Mistero', 'Thriller', 'Commedia', 'Guerra', 'Dramma', 'Western', 'Animazione']
 
 function converti(g: string[]): number[]{
  return Generiammessi.map(c=> g.includes(c)? 1:0)
@@ -29,9 +29,10 @@ export default function Calcolo(
   film:Film[],
   preferenza:number[],
   filmvisti:Film[],
+  piattaforme:string[]
 ): Film | undefined {
   const filmvistiid = filmvisti.map((f) => f.id);
-  const filmnuovi = film.filter((f) => !filmvistiid.includes(f.id));
+  const filmnuovi = film.filter((f) => !filmvistiid.includes(f.id) && piattaforme.includes(f.piattaforma));
   if (filmnuovi.length === 0) {
     return undefined;
   }

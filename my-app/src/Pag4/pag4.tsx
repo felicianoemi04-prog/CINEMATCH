@@ -1,19 +1,10 @@
 import YtCard from "./YtCard";
-import { useReducer,  } from "react";
-import Reducer from "../Reducer";
-import Calcolo from "../script/Suggerimenti";
-import { Catalogo } from "../data/catalogo_5000_film";
-const primofilm=Calcolo(Catalogo,preferenza,[])
-const initialState = {
-  corrente : primofilm,
-  preferiti :[],
-  dispreferiti:[],
-  visti :[],
-  gusti:preferenza
-
-}
-export default function App() {
-  const [state, dispatch] =useReducer(Reducer, initialState);
+import { ContestoStato } from "../Contestostato";
+import { ContestoReduce } from "../Contestoreduce";
+import { useContext } from "react";
+export default function Pag_4() {
+  const dispatch=useContext(ContestoReduce)
+  const state=useContext(ContestoStato)
   return (
     <>
       <header>
