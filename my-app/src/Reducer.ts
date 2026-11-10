@@ -16,13 +16,15 @@ export default function Reducer(state, action: action) {
   switch (action.type) {
     case "like": {
       const cor = state.corrente;
-      const nuovipreferiti = [...state.preferiti, cor];
+      const nuovipreferiti = [...state.preferiti, cor.id];
       const nuovigusti: number[] = AggGusti(state.gusti, cor, "+");
       const nuovocorrente = Calcolo(
         Catalogo,
         nuovigusti,
         state.visti,
         state.piattaforme,
+        nuovipreferiti,
+        state.dispreferiti,
       );
 
       return {
@@ -34,13 +36,15 @@ export default function Reducer(state, action: action) {
     }
     case "dislike": {
       const cor = state.corrente;
-      const nuovidispreferiti = [...state.dispreferiti, cor];
+      const nuovidispreferiti = [...state.dispreferiti, cor.id];
       const nuovigusti = AggGusti(state.gusti, cor, "-");
       const nuovocorrente = Calcolo(
         Catalogo,
         nuovigusti,
         state.visti,
         state.piattaforme,
+        state.preferiti,
+        nuovidispreferiti,
       );
 
       return {
@@ -58,6 +62,8 @@ export default function Reducer(state, action: action) {
         state.gusti,
         nuovivisti,
         state.piattaforme,
+        state.preferiti,
+        state.nuovidispreferiti,
       );
       return {
         ...state,
@@ -85,6 +91,8 @@ export default function Reducer(state, action: action) {
         state.gusti,
         state.visti,
         state.piattaforme,
+        state.preferiti,
+        state.dispreferiti,
       );
       return {
         ...state,

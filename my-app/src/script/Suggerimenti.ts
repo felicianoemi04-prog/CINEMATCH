@@ -42,6 +42,8 @@ export default function Calcolo(
   preferenza: number[],
   filmvisti: Film[],
   piattaforme: string[],
+  filmpiaciuti: Film[],
+  filmdispiaciuti: Film[],
 ): Film | undefined {
   const filmvistiid = filmvisti.map((f) => f.id);
   const filmnuovi = film.filter(
