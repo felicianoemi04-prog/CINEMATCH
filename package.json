@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "framer-motion": "^14.9.1",
+    "lucide-react": "^1.70.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0"
+  }
+}
