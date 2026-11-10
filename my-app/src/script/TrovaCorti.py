@@ -2,8 +2,8 @@ import json
 import time
 import requests
 
-API_KEY = "3b2c29a3b0d77aa319c73ebac1027584"  # La tua chiave API di TMDB
-COUNTRY_CODE = "IT"  # Paese di riferimento per le piattaforme
+API_KEY = "3b2c29a3b0d77aa319c73ebac1027584"
+COUNTRY_CODE = "IT"
 TARGET_SHORT_COUNT = 50
 
 session = requests.Session()
@@ -25,58 +25,66 @@ def get_director(movie_id):
   try:
     res = session.get(url, params=params, timeout=10)
     if res.status_code != 200:
-      return "Sconosciuto"
+      return "Indipendente"
     crew = res.json().get("crew", [])
     for member in crew:
       if member.get("job") == "Director":
         return member.get("name")
   except requests.RequestException:
     pass
-  return "Sconosciuto"
+  return "Indipendente"
 
 
-def get_watch_providers(movie_id):
-  url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
-  params = {"api_key": API_KEY}
-  try:
-    res = session.get(url, params=params, timeout=10)
-    if res.status_code != 200:
-      return [], None
-    results = res.json().get("results", {}).get(COUNTRY_CODE, {})
-    providers = []
-    link = results.get("link")  # Link generale TMDB per guardare il film
+def get_direct_watch_link(movie_id, details):
+  """Cerca un link di visione diretto (YouTube, Homepage video o Streaming) e scarta i fallback di TMDB."""
+  # 1. Controlla se l'homepage è un link video diretto (es. YouTube o Vimeo)
+  homepage = details.get("homepage")
+  if homepage and (
+      "youtube.com" in homepage
+      or "youtu.be" in homepage
+      or "vimeo.com" in homepage
+  ):
+    return homepage
 
-    for category in ["flatrate", "rent", "buy"]:
-      if category in results:
-        for p in results[category]:
-          providers.append(p.get("provider_name"))
-    return list(set(providers)), link
-  except requests.RequestException:
-    return [], None
-
-
-def get_trailer_key(movie_id):
+  # 2. Cerca nei video ufficiali di TMDB se c'è un video su YouTube (spesso i corti indie sono caricati lì)
   url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos"
   params = {"api_key": API_KEY}
   try:
     res = session.get(url, params=params, timeout=10)
-    if res.status_code != 200:
-      return None
-    videos = res.json().get("results", [])
-    for v in videos:
-      if v.get("site") == "YouTube" and v.get("type") in ["Trailer", "Teaser"]:
-        return v.get("key")
+    if res.status_code == 200:
+      videos = res.json().get("results", [])
+      for v in videos:
+        if v.get("site") == "YouTube":
+          key = v.get("key")
+          return f"https://www.youtube.com/watch?v={key}"
   except requests.RequestException:
     pass
+
+  # 3. Controlla i provider di streaming (JustWatch)
+  w_url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+  try:
+    w_res = session.get(w_url, params={"api_key": API_KEY}, timeout=10)
+    if w_res.status_code == 200:
+      results = w_res.json().get("results", {}).get(COUNTRY_CODE, {})
+      link = results.get("link")
+      if link:
+        return link
+  except requests.RequestException:
+    pass
+
+  # Se non c'è nessun link diretto utile, restituisce None (lo scartiamo)
   return None
 
 
-def generate_short_films_ts():
+def generate_tmdb_shorts_ts():
   catalogo = []
   page = 1
   id_progressivo = 1
 
-  print("Estrazione in corso di cortometraggi indipendenti da TMDB...")
+  print(
+      "Estrazione corti con link di visione diretto (senza pagine di"
+      " fallback)..."
+  )
 
   while len(catalogo) < TARGET_SHORT_COUNT:
     url = "https://api.themoviedb.org/3/discover/movie"
@@ -84,10 +92,9 @@ def generate_short_films_ts():
         "api_key": API_KEY,
         "language": "it-IT",
         "page": page,
-        "with_genres": 18,  # Genere Drammatico o specifico, oppure gestito dalla durata
-        "with_runtime.lte": 40,  # Durata massima 40 minuti (definizione di cortometraggio)
-        "with_budget.lte": 500000,  # Budget basso / indie
-        "sort_by": "popularity.desc",
+        "with_runtime.lte": 35,
+        "vote_count.lte": 150,
+        "sort_by": "popularity.asc",
     }
 
     try:
@@ -110,23 +117,23 @@ def generate_short_films_ts():
       movie_id = m.get("id")
       details = get_movie_details(movie_id)
 
-      # Filtriamo rigorosamente per sicurezza se la durata supera i 40 minuti
       runtime = details.get("runtime", 0)
-      if runtime and runtime > 40:
+      if not runtime or runtime < 2 or runtime > 35:
+        continue
+
+      # Cerca il link diretto: se non esiste, scarta il corto
+      url_guardare = get_direct_watch_link(movie_id, details)
+      if not url_guardare:
         continue
 
       regista = get_director(movie_id)
-      providers, watch_link = get_watch_providers(movie_id)
-      trailer_key = get_trailer_key(movie_id)
-
       release_date = m.get("release_date", "")
       anno = release_date.split("-")[0] if release_date else "Sconosciuto"
 
       nazionalita_list = [
           c.get("name") for c in details.get("production_countries", [])
       ]
-      paese = nazionalita_list[0] if nazionalita_list else None
-
+      paese = nazionalita_list[0] if nazionalita_list else "Sconosciuto"
       generi = [g.get("name") for g in details.get("genres", [])]
 
       short_entry = {
@@ -136,11 +143,9 @@ def generate_short_films_ts():
           "regista_creatore": regista,
           "anno": anno,
           "durata_minuti": runtime,
-          "piattaforme": providers if providers else ["Indipendente / Web"],
+          "piattaforme": ["YouTube / Web"],
           "generi": generi,
-          "trailer": trailer_key,  # Es. "dQw4w9WgXcQ"
-          "url_piattaforma": watch_link
-          or f"https://www.themoviedb.org/movie/{movie_id}",
+          "url_guardare": url_guardare,
       }
 
       catalogo.append(short_entry)
@@ -148,15 +153,14 @@ def generate_short_films_ts():
       time.sleep(0.05)
 
     print(
-        f"Estratti {len(catalogo)} / {TARGET_SHORT_COUNT} cortometraggi"
-        f" (Pagina {page})..."
+        f"Estratti {len(catalogo)} / {TARGET_SHORT_COUNT} corti con link"
+        f" diretto (Pagina {page})..."
     )
     page += 1
-    if page > 50:
+    if page > 100:
       break
 
-  # Scrittura del file TypeScript (.ts)
-  ts_content = f"""// File generato automaticamente dallo script Python (Cortometraggi Indie)
+  ts_content = f"""// File generato automaticamente dallo script Python (TMDB Direct Short Films)
 export interface ShortFilm {{
     id: number;
     nome: string;
@@ -166,8 +170,7 @@ export interface ShortFilm {{
     durata_minuti: number;
     piattaforme: string[];
     generi: string[];
-    trailer_id?: string | null;
-    url_piattaforma?: string | null;
+    url_guardare: string;
 }}
 
 export const INDIE_SHORT_FILMS: ShortFilm[] = {json.dumps(catalogo, ensure_ascii=False, indent=4)};
@@ -177,10 +180,10 @@ export const INDIE_SHORT_FILMS: ShortFilm[] = {json.dumps(catalogo, ensure_ascii
     f.write(ts_content)
 
   print(
-      "Operazione completata! File TypeScript 'catalogoCortiIndie.ts'"
-      " generato con successo."
+      "File 'catalogoCortiIndie.ts' aggiornato con soli link di visione"
+      " diretti!"
   )
 
 
 if __name__ == "__main__":
-  generate_short_films_ts()
+  generate_tmdb_shorts_ts()
