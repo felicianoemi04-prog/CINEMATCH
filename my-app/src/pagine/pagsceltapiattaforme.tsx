@@ -1,32 +1,34 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Selector from "./Botton";
 import { ContestoReduce } from "../Contestoreduce"; // Usiamo il contesto del dispatch
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Generiammessi } from "../script/Suggerimenti";
-
-type BottoneProps = {
-  genere: string;
-}
-
-function Bottone({ genere }: BottoneProps) {
-  const dispatch = useContext(ContestoReduce) as any; // Prende il dispatch corretto
-
-  return (
-    <button onClick={() => dispatch({ type: 'agg_gusti', value: genere })}>
-      {genere}
-    </button>
-  );
-}
+import { ContestoStato } from "../Contestostato";
+import { Piattaforme } from "../data/data";
 
 export default function Pagsceltapiat() {
+  const [piatscelti, setpiatscelti] = useState<string[]>([]);
+  const dispatch = useContext(ContestoReduce);
+  const navigate = useNavigate();
+  function togglepiat(id: string) {
+    if (piatscelti.includes(id)) {
+      setpiatscelti(piatscelti.filter((g) => g != id));
+    } else {
+      setpiatscelti([...piatscelti, id]);
+    }
+  }
+  function prosegui() {
+    dispatch({ type: "agg_piat", value: piatscelti });
+    dispatch({ type: "agg_corrente" });
+    console.log(piatscelti);
+    navigate("/esplora");
+  }
   return (
     <>
-      {/* Usiamo le parentesi tonde e aggiungiamo la key */}
-      {Generiammessi.map((g) => (
-        <Bottone key={g} genere={g} />
+      {Piattaforme.map((g) => (
+        <Selector id={g} key={g} func={() => togglepiat(g)}></Selector>
       ))}
-
-      <p>ciao</p>
-      <Link to="/esplora">Vai a esplora</Link>
+      <button onClick={() => prosegui()}>Avanti</button>
     </>
   );
 }

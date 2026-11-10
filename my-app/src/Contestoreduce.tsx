@@ -1,2 +1,2 @@
-import { createContext } from 'react'
-export const ContestoReduce=createContext()
+import { createContext } from "react";
+export const ContestoReduce = createContext(null);
