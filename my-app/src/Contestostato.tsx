@@ -1,2 +1,2 @@
 import { createContext } from "react";
- export const ContestoStato=createContext()
+export const ContestoStato = createContext(null);

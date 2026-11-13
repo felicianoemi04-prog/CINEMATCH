@@ -1,60 +1,103 @@
-import Calcolo from "./script/Suggerimenti"
-import { Catalogo } from "./data/catalogo_5000_film"
-import { AggGusti, } from "./script/Suggerimenti"
+import Calcolo from "./script/Suggerimenti";
+import { Catalogo } from "./data/catalogo_5000_film";
+import { AggGusti } from "./script/Suggerimenti";
+import { converti } from "./script/Suggerimenti";
+type action =
+  | { type: "like" }
+  | { type: "dislike" }
+  | { type: "visto" }
+  | { type: "visto" }
+  | { type: "vedi" }
+  | { type: "agg_gusti"; value: string[] }
+  | { type: "agg_piat"; value: string[] }
+  | { type: "agg_corrente" };
 
-
-export default function Reducer(state, action) {
+export default function Reducer(state, action: action) {
   switch (action.type) {
-    case 'like': {
+    case "like": {
       const cor = state.corrente;
-      const nuovipreferiti = [...state.preferiti, cor];
+      const nuovipreferiti = [...state.preferiti, cor.id];
       const nuovigusti: number[] = AggGusti(state.gusti, cor, "+");
-      const nuovocorrente = Calcolo(Catalogo, nuovigusti, state.visti, state.piattaforme);
+      const nuovocorrente = Calcolo(
+        Catalogo,
+        nuovigusti,
+        state.visti,
+        state.piattaforme,
+        nuovipreferiti,
+        state.dispreferiti,
+      );
 
       return {
         ...state,
         preferiti: nuovipreferiti,
         gusti: nuovigusti,
         corrente: nuovocorrente,
-      }
+      };
     }
     case "dislike": {
-      const cor = state.corrente
-      const nuovidispreferiti = [...state.dispreferiti, cor]
-      const nuovigusti = AggGusti(state.gusti, cor, "-")
-      const nuovocorrente = Calcolo(Catalogo, nuovigusti, state.visti, state.piattaforme)
+      const cor = state.corrente;
+      const nuovidispreferiti = [...state.dispreferiti, cor.id];
+      const nuovigusti = AggGusti(state.gusti, cor, "-");
+      const nuovocorrente = Calcolo(
+        Catalogo,
+        nuovigusti,
+        state.visti,
+        state.piattaforme,
+        state.preferiti,
+        nuovidispreferiti,
+      );
 
       return {
         ...state,
         dispreferiti: nuovidispreferiti,
         gusti: nuovigusti,
         corrente: nuovocorrente,
-      }
+      };
     }
     case "visto":
       const cor = state.corrente;
       const nuovivisti = [...state.visti, cor];
-      const nuovocorrente = Calcolo(Catalogo, state.gusti, state.visti, state.piattaforme);
+      const nuovocorrente = Calcolo(
+        Catalogo,
+        state.gusti,
+        nuovivisti,
+        state.piattaforme,
+        state.preferiti,
+        state.nuovidispreferiti,
+      );
       return {
         ...state,
         visti: nuovivisti,
         corrente: nuovocorrente,
-      }
+      };
     case "vedi":
-      return state
-    case "agg_piattaforma":
-      const nuovepiattaforme = [...state.piattaforme, action.piattaforma]
+      return state;
+    case "agg_piat":
       return {
         ...state,
-        piattaforme: nuovepiattaforme
-      }
+        piattaforme: action.value,
+      };
 
     case "agg_gusti":
-      const nuovigeneri = [...state.generiscelti, action.value]
+      const nuovigusti = converti(action.value);
+      console.log(nuovigusti);
       return {
         ...state,
-        generiscelti: nuovigeneri
-      }
-     }
+        gusti: nuovigusti,
+      };
+    case "agg_corrente": {
+      const nuovocorrente = Calcolo(
+        Catalogo,
+        state.gusti,
+        state.visti,
+        state.piattaforme,
+        state.preferiti,
+        state.dispreferiti,
+      );
+      return {
+        ...state,
+        corrente: nuovocorrente,
+      };
+    }
   }
 }
