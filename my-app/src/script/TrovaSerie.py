@@ -2,7 +2,7 @@ import json
 import time
 import requests
 
-TARGET_SHOW_COUNT = 50
+TARGET_SHOW_COUNT = 1000
 session = requests.Session()
 
 FAMOUS_NETWORKS = {

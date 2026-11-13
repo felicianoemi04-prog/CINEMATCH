@@ -15,21 +15,20 @@ export interface TVShow {
 export const INDIE_TV_SHOWS: TVShow[] = [
     {
         "id": 1,
-        "nome": "The Walking Dead",
-        "paese": "United States",
-        "regista_creatore": "Ryan Degard",
-        "anno": "2010",
-        "numero_episodi": 177,
+        "nome": "HELLUVA BOSS",
+        "paese": "Stati Uniti",
+        "regista_creatore": "Vivienne Medrano",
+        "anno": "2019",
+        "numero_episodi": 28,
         "piattaforme": [
-            "AMC+"
+            "Youtube"
         ],
         "generi": [
-            "Drama",
-            "Action",
-            "Horror"
+            "Animazione",
+            "Horror,"
         ],
-        "trailer_id": "cu2ApTImBKc",
-        "url_piattaforma": "https://www.amc.com/twdu/the-walking-dead"
+        "trailer_id": "iN0rFuCCA-Y",
+        "url_piattaforma": "https://www.youtube.com/playlist?list=PL-uopgYBi65HwiiDR9Y23lomAkGr9mm-S"
     },
     {
         "id": 2,

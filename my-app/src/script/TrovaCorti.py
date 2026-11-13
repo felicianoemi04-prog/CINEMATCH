@@ -4,7 +4,7 @@ import requests
 
 API_KEY = "3b2c29a3b0d77aa319c73ebac1027584"
 COUNTRY_CODE = "IT"
-TARGET_SHORT_COUNT = 50
+TARGET_SHORT_COUNT = 100
 
 session = requests.Session()
 
@@ -37,7 +37,6 @@ def get_director(movie_id):
 
 def get_direct_watch_link(movie_id, details):
   """Cerca un link di visione diretto (YouTube, Homepage video o Streaming) e scarta i fallback di TMDB."""
-  # 1. Controlla se l'homepage è un link video diretto (es. YouTube o Vimeo)
   homepage = details.get("homepage")
   if homepage and (
       "youtube.com" in homepage
@@ -46,7 +45,6 @@ def get_direct_watch_link(movie_id, details):
   ):
     return homepage
 
-  # 2. Cerca nei video ufficiali di TMDB se c'è un video su YouTube (spesso i corti indie sono caricati lì)
   url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos"
   params = {"api_key": API_KEY}
   try:
@@ -60,7 +58,6 @@ def get_direct_watch_link(movie_id, details):
   except requests.RequestException:
     pass
 
-  # 3. Controlla i provider di streaming (JustWatch)
   w_url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
   try:
     w_res = session.get(w_url, params={"api_key": API_KEY}, timeout=10)
@@ -72,7 +69,6 @@ def get_direct_watch_link(movie_id, details):
   except requests.RequestException:
     pass
 
-  # Se non c'è nessun link diretto utile, restituisce None (lo scartiamo)
   return None
 
 
@@ -121,10 +117,15 @@ def generate_tmdb_shorts_ts():
       if not runtime or runtime < 2 or runtime > 35:
         continue
 
-      # Cerca il link diretto: se non esiste, scarta il corto
       url_guardare = get_direct_watch_link(movie_id, details)
       if not url_guardare:
         continue
+
+      youtube_id = ""
+      if "youtube.com/watch?v=" in url_guardare:
+        youtube_id = url_guardare.split("v=")[1].split("&")[0]
+      elif "youtu.be/" in url_guardare:
+        youtube_id = url_guardare.split("youtu.be/")[1].split("?")[0]
 
       regista = get_director(movie_id)
       release_date = m.get("release_date", "")
@@ -146,6 +147,7 @@ def generate_tmdb_shorts_ts():
           "piattaforme": ["YouTube / Web"],
           "generi": generi,
           "url_guardare": url_guardare,
+          "youtube_id?": youtube_id,
       }
 
       catalogo.append(short_entry)
@@ -171,6 +173,7 @@ export interface ShortFilm {{
     piattaforme: string[];
     generi: string[];
     url_guardare: string;
+    youtube_id?: string;
 }}
 
 export const INDIE_SHORT_FILMS: ShortFilm[] = {json.dumps(catalogo, ensure_ascii=False, indent=4)};
