@@ -11,11 +11,19 @@ export default function Pag_4() {
         <h1>My film collection</h1>
       </header>
       <main>
-        <YtCard videoId={state.corrente.id} />
-        <button onClick={() => dispatch({ type: "like" })}>like</button>
-        <button onClick={() => dispatch({ type: "dislike" })}>dislike</button>
-        <button onClick={() => dispatch({ type: "visto" })}>visto</button>
-        <button onClick={() => dispatch({ type: "vedi" })}>vedi</button>
+        {state.corrente != null ? (
+          <>
+            <YtCard videoId={state.corrente.trailer} />
+            <button onClick={() => dispatch({ type: "like" })}>like</button>
+            <button onClick={() => dispatch({ type: "dislike" })}>
+              dislike
+            </button>
+            <button onClick={() => dispatch({ type: "visto" })}>visto</button>
+            <button onClick={() => dispatch({ type: "vedi" })}>vedi</button>
+          </>
+        ) : (
+          <p>Hai finito i film</p>
+        )}
         <div>{JSON.stringify(state, null, 2)}</div>;
       </main>
     </>

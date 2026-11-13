@@ -29,6 +29,14 @@ export const Generiammessi = [
   "Animazione",
 ];
 
+export type Stato = {
+  corrente: Film | null;
+  preferiti: number[];
+  dispreferiti: number[];
+  visti: Film[];
+  gusti: number[];
+  piattaforme: string[];
+};
 export function converti(g: string[]): number[] {
   return Generiammessi.map((c) => (g.includes(c) ? 1 : 0));
 }
@@ -42,12 +50,16 @@ export default function Calcolo(
   preferenza: number[],
   filmvisti: Film[],
   piattaforme: string[],
-  filmpiaciuti: Film[],
-  filmdispiaciuti: Film[],
+  filmpiaciuti: number[],
+  filmdispiaciuti: number[],
 ): Film | undefined {
   const filmvistiid = filmvisti.map((f) => f.id);
   const filmnuovi = film.filter(
-    (f) => !filmvistiid.includes(f.id) && piattaforme.includes(f.piattaforma),
+    (f) =>
+      !filmvistiid.includes(f.id) &&
+      piattaforme.includes(f.piattaforma) &&
+      !filmpiaciuti.includes(f.id) &&
+      !filmdispiaciuti.includes(f.id),
   );
   if (filmnuovi.length === 0) {
     return undefined;

@@ -9,7 +9,7 @@ import Pag_4 from "./Pag4/pag4";
 import PagControllo from "./Pagcontrollo";
 import { ContestoStato } from "./Contestostato";
 import { ContestoReduce } from "./Contestoreduce";
-import { Generiammessi } from "./script/Suggerimenti";
+import { Generiammessi, type Stato } from "./script/Suggerimenti";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -30,18 +30,8 @@ const router = createBrowserRouter([
 ]);
 export default function Provider() {
   const giniziali = Generiammessi.map((f) => 0);
-  const initialState = {
-    corrente: {
-      nome: "Fall 2: Deadpoint",
-      paese: "United Kingdom",
-      regista: "Michael Spierig",
-      anno: 2026,
-      durata: 98,
-      piattaforma: "Non disponibile",
-      generi: ["Thriller"],
-      id: 1,
-      trailer: "Krs0VDIjhmE",
-    },
+  const initialState: Stato = {
+    corrente: null,
     preferiti: [],
     dispreferiti: [],
     visti: [],

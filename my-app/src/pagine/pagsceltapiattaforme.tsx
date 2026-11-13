@@ -19,7 +19,7 @@ export default function Pagsceltapiat() {
   }
   function prosegui() {
     dispatch({ type: "agg_piat", value: piatscelti });
-    dispatch({ type: "agg_corrente" });
+    dispatch({ type: "set_corrente" });
     console.log(piatscelti);
     navigate("/esplora");
   }

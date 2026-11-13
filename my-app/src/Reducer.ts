@@ -1,18 +1,17 @@
-import Calcolo from "./script/Suggerimenti";
+import Calcolo, { type Stato } from "./script/Suggerimenti";
 import { Catalogo } from "./data/catalogo_5000_film";
 import { AggGusti } from "./script/Suggerimenti";
 import { converti } from "./script/Suggerimenti";
 type action =
-  | { type: "like" }
-  | { type: "dislike" }
-  | { type: "visto" }
-  | { type: "visto" }
-  | { type: "vedi" }
+  | { type: "like"; payload: number }
+  | { type: "dislike"; payload: number }
+  | { type: "visto"; payload: number }
+  | { type: "vedi"; payload: number }
   | { type: "agg_gusti"; value: string[] }
   | { type: "agg_piat"; value: string[] }
-  | { type: "agg_corrente" };
+  | { type: "set_corrente" };
 
-export default function Reducer(state, action: action) {
+export default function Reducer(state: Stato, action: action) {
   switch (action.type) {
     case "like": {
       const cor = state.corrente;
@@ -63,7 +62,7 @@ export default function Reducer(state, action: action) {
         nuovivisti,
         state.piattaforme,
         state.preferiti,
-        state.nuovidispreferiti,
+        state.dispreferiti,
       );
       return {
         ...state,
@@ -77,7 +76,6 @@ export default function Reducer(state, action: action) {
         ...state,
         piattaforme: action.value,
       };
-
     case "agg_gusti":
       const nuovigusti = converti(action.value);
       console.log(nuovigusti);
@@ -85,7 +83,7 @@ export default function Reducer(state, action: action) {
         ...state,
         gusti: nuovigusti,
       };
-    case "agg_corrente": {
+    case "set_corrente": {
       const nuovocorrente = Calcolo(
         Catalogo,
         state.gusti,

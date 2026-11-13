@@ -15,7 +15,6 @@ export default function YtCard({ videoId }: YtCardProps) {
         referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen
       ></iframe>
-      ;
     </>
   );
 }
