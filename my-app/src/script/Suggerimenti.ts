@@ -36,6 +36,7 @@ export type Stato = {
   visti: Film[];
   gusti: number[];
   piattaforme: string[];
+  url: string;
 };
 export function converti(g: string[]): number[] {
   return Generiammessi.map((c) => (g.includes(c) ? 1 : 0));

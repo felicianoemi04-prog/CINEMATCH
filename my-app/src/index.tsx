@@ -37,6 +37,7 @@ export default function Provider() {
     visti: [],
     gusti: giniziali,
     piattaforme: [],
+    url: "",
   };
   const [state, dispatch] = useReducer(Reducer, initialState);
   return (

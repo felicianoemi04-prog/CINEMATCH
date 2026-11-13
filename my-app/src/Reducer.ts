@@ -69,8 +69,52 @@ export default function Reducer(state: Stato, action: action) {
         visti: nuovivisti,
         corrente: nuovocorrente,
       };
-    case "vedi":
-      return state;
+    case "vedi": {
+      const p = state.corrente.piattaforma;
+      const query = encodeURIComponent(state.corrente.nome);
+      let url = "";
+
+      if (p.includes("netflix")) {
+        url = `https://www.netflix.com/search?q=${query}`;
+      } else if (
+        p.includes("amazon prime video") ||
+        p.includes("amazon video")
+      ) {
+        url = `https://www.amazon.com/s?k=${query}&i=instant-video`;
+      } else if (p.includes("apple tv store")) {
+        url = `https://tv.apple.com/it/search?term=${query}`;
+      } else if (p.includes("disney plus")) {
+        url = `https://www.disneyplus.com/search/${query}`;
+      } else if (p.includes("sky go")) {
+        url = `https://skygo.sky.it/`;
+      } else if (p.includes("crunchyroll")) {
+        url = `https://www.crunchyroll.com/search?q=${query}`;
+      } else if (p.includes("mubi")) {
+        url = `https://mubi.com/it/search/films?query=${query}`;
+      } else if (p.includes("timvision")) {
+        url = `https://www.timvision.it/search/${query}`;
+      } else if (p.includes("rakuten tv")) {
+        url = `https://rakuten.tv/it/search?q=${query}`;
+      } else if (p.includes("midnight factory")) {
+        url = `https://www.amazon.com/s?k=${query}&i=instant-video`; // Canale Prime Video
+      } else if (p.includes("anime generation")) {
+        url = `https://www.amazon.com/s?k=${query}&i=instant-video`; // Canale Prime Video
+      } else if (p.includes("hbo max")) {
+        url = `https://www.max.com/search?q=${query}`;
+      } else if (p.includes("lionsgate+")) {
+        url = `https://www.amazon.com/s?k=${query}&i=instant-video`;
+      } else if (p.includes("cg tv streaming")) {
+        url = `https://www.cgtv.it/`;
+      } else if (p.includes("mymovies one")) {
+        url = `https://www.mymovies.it/ondemand/one/`;
+      } else if (p === "non disponibile") {
+        url = null; // Film non disponibile su piattaforme di streaming indicate
+      }
+      return {
+        ...state,
+        url: url,
+      };
+    }
     case "agg_piat":
       return {
         ...state,
